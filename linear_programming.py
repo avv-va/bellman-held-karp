@@ -1,5 +1,4 @@
 from pulp import LpProblem, LpMinimize, LpVariable, LpInteger, value
-from input import get_input
 from utils import powerset
 
 def solve_by_LIP(path_cost): 
