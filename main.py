@@ -1,6 +1,7 @@
-from input import get_input
 import math
-from itertools import chain, combinations
+
+from input import get_input
+from utils import powerset
 
 
 def calculate_cost(origin, dest, via, cost_matrix, path_cost, parent_matrix):
@@ -20,11 +21,6 @@ def calculate_cost(origin, dest, via, cost_matrix, path_cost, parent_matrix):
         return min_cost, parent
 
 
-def powerset(s):
-    return list(
-        chain.from_iterable(combinations(s, r) for r in range(len(s) + 1)))
-
-
 def calculate_path(parent_matrix, origin, final_via):
     dest = origin
     via = final_via
@@ -39,8 +35,9 @@ def calculate_path(parent_matrix, origin, final_via):
     return path
 
 
-def get_tsp_path(origin, path_cost):
+def get_tsp_path(path_cost):
     nodes_num = len(path_cost[0])
+    origin = 0 # It doesn't really matter where you choose as origin since you are doing a full tour
     possible_paths = powerset([i for i in range(0, nodes_num) if i != origin])
 
     cost_matrix = {}
@@ -85,7 +82,8 @@ def print_matrix(cost, parent):
 
 
 if __name__ == '__main__':
-    origin, path_cost = get_input(1)
-    optimal_cost, path = get_tsp_path(origin, path_cost)
-    print("Optimal cost is: ", optimal_cost)
-    print_path(path)
+    path_cost = get_input(1)
+    if path_cost is not None:
+        optimal_cost, path = get_tsp_path(path_cost)
+        print("Optimal cost is: ", optimal_cost)
+        print_path(path)
