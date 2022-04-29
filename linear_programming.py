@@ -1,10 +1,9 @@
-from pulp import LpProblem, LpMinimize, LpVariable, LpInteger
+from pulp import LpProblem, LpMinimize, LpVariable, LpInteger, value
 from input import get_input
 from utils import powerset
 
-def form_LIP(): 
-    c = get_input(1)  # path_cost
-    nodes_num = len(c[0])
+def solve_by_LIP(path_cost): 
+    nodes_num = len(path_cost[0])
     problem = LpProblem('TravellingSalesmanProblem', LpMinimize)
     
     x = [] # vars
@@ -17,7 +16,7 @@ def form_LIP():
     objective = 0
     for i in range(0, nodes_num):
         for j in range(0, nodes_num):
-            objective += x[i][j] * c[i][j]
+            objective += x[i][j] * path_cost[i][j]
     problem += objective, 'objective function'
     
     # each node has only one outgoing edge and one ingoing edge
@@ -35,17 +34,18 @@ def form_LIP():
     for subset in power_set:
         if len(subset) == nodes_num:
             continue
-        c = None
+        path_cost = None
         for i in subset:
             for j in subset:
-                c += x[i][j]
-        problem += c <= (len(subset) - 1)
+                path_cost += x[i][j]
+        problem += path_cost <= (len(subset) - 1)
 
     problem.solve()
-    print(f"Objective is: {problem.objective}")
+
+    path = ''  # TODO: Better return a path type similar to BHK
     for i in range(0, nodes_num):
         for j in range(0, nodes_num):
             if x[i][j].varValue == 1:
-                print(f"{i} -> {j}")
-
-form_LIP()
+                path += f'{i} -> {j}, '
+    
+    return value(problem.objective), path
